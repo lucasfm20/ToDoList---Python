@@ -4,6 +4,9 @@ cont = 0.35
 listText = []
 listCheck = []
 
+listCont = []
+menor = 0.0
+
 def checkBox_event(check_var, newTextBox, checkbox):
     if check_var.get() == "on":
         if newTextBox not in listText:
@@ -13,6 +16,7 @@ def checkBox_event(check_var, newTextBox, checkbox):
         if newTextBox in listText:
             listText.remove(newTextBox)
             listCheck.remove(checkbox)
+            
 
 def buttonDelete_event():
     global cont
@@ -22,14 +26,26 @@ def buttonDelete_event():
     for check in listCheck:
         check.destroy()
 
+    
+    print(len(listText))
     cont -= 0.1 * len(listText)
     listText.clear()
     listCheck.clear()
+    print("------")
+    print (len(listCont))
+    if(len(listCont)>0  ):
+        print("aaaaaaaa")
+        cont-=0.1
+    listCont.remove(cont)
+    
 
 def createTasks():
-    global cont
-    
-    if cont < 0.749:
+    global cont ,menor 
+    print (listCont)
+    print (cont)
+    if cont not in listCont :
+
+     if cont < 0.749:
         newTextBox = CTkTextbox(master=app, width=500, height=10, font=("Arial", 18), corner_radius=10, fg_color="#3C3E40", border_color="#A6A486", border_width=1)
         check_var = StringVar(value="off")
         
@@ -40,11 +56,46 @@ def createTasks():
         newTextBox.configure(state="disabled")
         newTextBox.place(relx=0.5, rely=cont, anchor="center")
         checkbox.place(relx=0.3, rely=cont, anchor="center")
+        
+        listCont.append(cont)
         cont += 0.1
-
+        menor = cont
         tasks.delete(first_index=0, last_index=len(tasks.get()))
-    else:
+     else:
         print("Limite")
+    
+    else:
+        if cont > menor:
+         cont-=0.1
+         print("aqaq")
+         print(cont)
+        
+        else:
+           print(cont)
+           print("aqqqqqqq")
+           if cont <= 0.649: 
+            while cont <= menor:
+             print(cont)
+             cont+=0.1
+             print("---")
+             print(cont)
+           else:
+            print("limite")
+            listCont.remove(cont)
+
+           newTextBox = CTkTextbox(master=app, width=500, height=10, font=("Arial", 18), corner_radius=10, fg_color="#3C3E40", border_color="#A6A486", border_width=1)
+           check_var = StringVar(value="off")
+        
+           checkbox = CTkCheckBox(master=app, text="", fg_color="blue", checkbox_height=20, checkbox_width=20, width=1, variable=check_var, onvalue="on", offvalue="off")
+           checkbox.configure(command=lambda cv=check_var, ntb=newTextBox, cb=checkbox: checkBox_event(cv, ntb, cb))
+
+           newTextBox.insert("0.0", tasks.get())
+           newTextBox.configure(state="disabled")
+           newTextBox.place(relx=0.5, rely=cont, anchor="center")
+           checkbox.place(relx=0.3, rely=cont, anchor="center")
+           menor = cont
+           listCont.append(cont)
+           
 
 app = CTk()
 app.geometry("500x400")
