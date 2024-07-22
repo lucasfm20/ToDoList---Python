@@ -1,117 +1,98 @@
-from customtkinter import *
+import customtkinter as ctk
+import tkinter as tk
+import sqlite3
 
-cont = 0.35
-listText = []
-listCheck = []
+class ToDoListApp(ctk.CTk):
+    def __init__(self):
+        super().__init__()
+        self.title("To-Do List")
+        self.geometry("400x500")
+        ctk.set_appearance_mode("dark")
 
-listCont = []
-menor = 0.0
+        # Conectar ao banco de dados
+        self.conn = sqlite3.connect('meu_banco_de_dados.db')
+        self.cursor = self.conn.cursor()
 
-def checkBox_event(check_var, newTextBox, checkbox):
-    if check_var.get() == "on":
-        if newTextBox not in listText:
-            listText.append(newTextBox)
-            listCheck.append(checkbox)
-    else:
-        if newTextBox in listText:
-            listText.remove(newTextBox)
-            listCheck.remove(checkbox)
-            
+        # Criar tabela se não existir (sem o campo concluida)
+        # self.cursor.execute('DROP TABLE IF EXISTS tarefas')
+        self.cursor.execute('''
+        CREATE TABLE IF NOT EXISTS tarefas (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            descricao TEXT NOT NULL
+        )
+        ''')
+        self.conn.commit()
+        
 
-def buttonDelete_event():
-    global cont
+        # Lista de tarefas
+        self.tasks = []
 
-    for text in listText:
-        text.destroy()
-    for check in listCheck:
-        check.destroy()
+        # Frame principal
+        self.frame = ctk.CTkFrame(self)
+        self.frame.pack(padx=20, pady=20, fill='both', expand=True)
 
+        # Entrada para novas tarefas
+        self.entry = ctk.CTkEntry(self.frame, placeholder_text="Adicione uma nova tarefa")
+        self.entry.pack(pady=(0, 10), fill='x')
+
+        # Botão para adicionar tarefas
+        self.add_button = ctk.CTkButton(self.frame, text="Adicionar", command=self.add_task)
+        self.add_button.pack(pady=(0, 20))
+
+        # Frame para as tarefas
+        self.tasks_frame = ctk.CTkFrame(self.frame)
+        self.tasks_frame.pack(fill='both', expand=True)
+
+        # Botão para remover tarefas selecionadas
+        self.remove_button = ctk.CTkButton(self.frame, text="Remover selecionadas", command=self.remove_tasks)
+        self.remove_button.pack(pady=(10, 0))
+
+        
+
+        # Carregar tarefas do banco de dados
+        self.load_tasks()
+
+    def load_tasks(self):
+        self.cursor.execute('SELECT * FROM tarefas')
+        tarefas = self.cursor.fetchall()
+        for tarefa in tarefas:
+            task_var = tk.BooleanVar(value=False)
+            task_check = ctk.CTkCheckBox(self.tasks_frame, text=tarefa[1], variable=task_var)
+            task_check.pack(anchor='w', pady=5)
+            self.tasks.append((task_check, task_var))
+
+    def add_task(self):
+        task_text = self.entry.get()
+        if task_text:
+            task_var = tk.BooleanVar()
+            task_check = ctk.CTkCheckBox(self.tasks_frame, text=task_text, variable=task_var, corner_radius=5, height=5)
+            task_check.pack(anchor='w', pady=5)
+            self.tasks.append((task_check, task_var))
+            self.entry.delete(0, tk.END)
+
+            # Inserir a nova tarefa no banco de dados (sem o campo concluida)
+            self.cursor.execute('''
+            INSERT INTO tarefas (descricao)
+            VALUES (?)
+            ''', (task_text,))
+            self.conn.commit()
+
+    def remove_tasks(self):
+        for task_check, task_var in self.tasks[:]:
+            if task_var.get():
+                # Remover do banco de dados
+                self.cursor.execute('''
+                DELETE FROM tarefas
+                WHERE descricao = ?
+                ''', (task_check.cget('text'),))
+                self.conn.commit()
+                
+                task_check.destroy()
+                self.tasks.remove((task_check, task_var))
+
+   
+
+if __name__ == "__main__":
     
-    print(len(listText))
-    cont -= 0.1 * len(listText)
-    listText.clear()
-    listCheck.clear()
-    print("------")
-    print (len(listCont))
-    if(len(listCont)>0  ):
-        print("aaaaaaaa")
-        cont-=0.1
-    listCont.remove(cont)
-    
-
-def createTasks():
-    global cont ,menor 
-    print (listCont)
-    print (cont)
-    if cont not in listCont :
-
-     if cont < 0.749:
-        newTextBox = CTkTextbox(master=app, width=500, height=10, font=("Arial", 18), corner_radius=10, fg_color="#3C3E40", border_color="#A6A486", border_width=1)
-        check_var = StringVar(value="off")
-        
-        checkbox = CTkCheckBox(master=app, text="", fg_color="blue", checkbox_height=20, checkbox_width=20, width=1, variable=check_var, onvalue="on", offvalue="off")
-        checkbox.configure(command=lambda cv=check_var, ntb=newTextBox, cb=checkbox: checkBox_event(cv, ntb, cb))
-
-        newTextBox.insert("0.0", tasks.get())
-        newTextBox.configure(state="disabled")
-        newTextBox.place(relx=0.5, rely=cont, anchor="center")
-        checkbox.place(relx=0.3, rely=cont, anchor="center")
-        
-        listCont.append(cont)
-        cont += 0.1
-        menor = cont
-        tasks.delete(first_index=0, last_index=len(tasks.get()))
-     else:
-        print("Limite")
-    
-    else:
-        if cont > menor:
-         cont-=0.1
-         print("aqaq")
-         print(cont)
-        
-        else:
-           print(cont)
-           print("aqqqqqqq")
-           if cont <= 0.649: 
-            while cont <= menor:
-             print(cont)
-             cont+=0.1
-             print("---")
-             print(cont)
-           else:
-            print("limite")
-            listCont.remove(cont)
-
-           newTextBox = CTkTextbox(master=app, width=500, height=10, font=("Arial", 18), corner_radius=10, fg_color="#3C3E40", border_color="#A6A486", border_width=1)
-           check_var = StringVar(value="off")
-        
-           checkbox = CTkCheckBox(master=app, text="", fg_color="blue", checkbox_height=20, checkbox_width=20, width=1, variable=check_var, onvalue="on", offvalue="off")
-           checkbox.configure(command=lambda cv=check_var, ntb=newTextBox, cb=checkbox: checkBox_event(cv, ntb, cb))
-
-           newTextBox.insert("0.0", tasks.get())
-           newTextBox.configure(state="disabled")
-           newTextBox.place(relx=0.5, rely=cont, anchor="center")
-           checkbox.place(relx=0.3, rely=cont, anchor="center")
-           menor = cont
-           listCont.append(cont)
-           
-
-app = CTk()
-app.geometry("500x400")
-
-set_appearance_mode("dark")
-
-textbox = CTkTextbox(master=app, text_color="white", width=400, height=100, font=("Arial", 40), fg_color="transparent")
-tasks = CTkEntry(master=app, placeholder_text="Digite..", width=500, font=("Arial", 20), corner_radius=10)
-button = CTkButton(master=app, text="Adicionar", corner_radius=50, fg_color="blue", command=createTasks, width=70, height=50, font=("Arial", 20), border_color="#A6A486", border_width=1, hover_color="#004F4D")
-deletebutton = CTkButton(master=app, text="", corner_radius=100, fg_color="blue", command=buttonDelete_event, width=25, height=25)
-
-textbox.insert("0.0", "Lista de tarefas")
-textbox.configure(state="disabled")
-textbox.place(relx=0.54, rely=0.1, anchor="center")
-tasks.place(relx=0.5, rely=0.25, anchor="center")
-button.place(relx=0.5, rely=0.8, anchor="center")
-deletebutton.place(relx=0.29, rely=0.8, anchor="center")
-
-app.mainloop()
+    app = ToDoListApp()
+    app.mainloop()
