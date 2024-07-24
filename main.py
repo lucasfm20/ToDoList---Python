@@ -10,14 +10,10 @@ class ToDoListApp(ctk.CTk):
         self.title("To-Do List")
         self.geometry("400x500")
         ctk.set_appearance_mode("dark")
-
-        # Conectar ao banco de dados
+        
         self.conn = sqlite3.connect('meu_banco_de_dados.db')
         self.cursor = self.conn.cursor()
 
-        # Criar tabela se não existir (sem o campo concluida)
-        # self.cursor.execute('DROP Tlucas fortunato
-        #   Lista de tarefas pendentes  ABLE IF EXISTS tarefas')
         self.cursor.execute('''
         CREATE TABLE IF NOT EXISTS tarefas (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -25,10 +21,10 @@ class ToDoListApp(ctk.CTk):
         )
         ''')
         self.conn.commit()
-        
 
         # Lista de tarefas
         self.tasks = []
+        
 
         # Frame principal
         self.frame = ctk.CTkFrame(self)
@@ -37,6 +33,7 @@ class ToDoListApp(ctk.CTk):
         # Entrada para novas tarefas
         self.entry = ctk.CTkEntry(self.frame, placeholder_text="Adicione uma nova tarefa")
         self.entry.pack(pady=(0, 10), fill='x')
+        self.entry.bind('<Return>', self.on_enter_key)  # Bind da tecla Enter
 
         # Botão para adicionar tarefas
         self.add_button = ctk.CTkButton(self.frame, text="Adicionar", command=self.add_task)
@@ -53,10 +50,12 @@ class ToDoListApp(ctk.CTk):
         self.envia = ctk.CTkButton(self.frame, text="Enviar por email", command=self.envia_mail)
         self.envia.pack(pady=(10, 0))
 
-        
-
         # Carregar tarefas do banco de dados
         self.load_tasks()
+        
+
+    def on_enter_key(self, event):
+        self.add_task()
 
     def load_tasks(self):
         self.cursor.execute('SELECT * FROM tarefas')
@@ -99,10 +98,8 @@ class ToDoListApp(ctk.CTk):
     def envia_mail(self):
         tasks = banco.listaTarefas()
         if tasks:
-                automacao.geraEmail(tasks)         
-        
+            automacao.geraEmail(tasks)         
 
 if __name__ == "__main__":
-    
     app = ToDoListApp()
     app.mainloop()
