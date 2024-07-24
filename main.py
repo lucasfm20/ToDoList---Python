@@ -1,6 +1,8 @@
 import customtkinter as ctk
 import tkinter as tk
 import sqlite3
+import banco
+import automacao
 
 class ToDoListApp(ctk.CTk):
     def __init__(self):
@@ -14,7 +16,8 @@ class ToDoListApp(ctk.CTk):
         self.cursor = self.conn.cursor()
 
         # Criar tabela se não existir (sem o campo concluida)
-        # self.cursor.execute('DROP TABLE IF EXISTS tarefas')
+        # self.cursor.execute('DROP Tlucas fortunato
+        #   Lista de tarefas pendentes  ABLE IF EXISTS tarefas')
         self.cursor.execute('''
         CREATE TABLE IF NOT EXISTS tarefas (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -46,6 +49,9 @@ class ToDoListApp(ctk.CTk):
         # Botão para remover tarefas selecionadas
         self.remove_button = ctk.CTkButton(self.frame, text="Remover selecionadas", command=self.remove_tasks)
         self.remove_button.pack(pady=(10, 0))
+
+        self.envia = ctk.CTkButton(self.frame, text="Enviar por email", command=self.envia_mail)
+        self.envia.pack(pady=(10, 0))
 
         
 
@@ -90,7 +96,11 @@ class ToDoListApp(ctk.CTk):
                 task_check.destroy()
                 self.tasks.remove((task_check, task_var))
 
-   
+    def envia_mail(self):
+        tasks = banco.listaTarefas()
+        if tasks:
+                automacao.geraEmail(tasks)         
+        
 
 if __name__ == "__main__":
     
