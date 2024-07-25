@@ -24,7 +24,6 @@ class ToDoListApp(ctk.CTk):
 
         # Lista de tarefas
         self.tasks = []
-        
 
         # Frame principal
         self.frame = ctk.CTkFrame(self)
@@ -52,7 +51,6 @@ class ToDoListApp(ctk.CTk):
 
         # Carregar tarefas do banco de dados
         self.load_tasks()
-        
 
     def on_enter_key(self, event):
         self.add_task()
@@ -96,9 +94,26 @@ class ToDoListApp(ctk.CTk):
                 self.tasks.remove((task_check, task_var))
 
     def envia_mail(self):
+        email_window = ctk.CTkToplevel(self)
+        email_window.title("Enviar Email")
+        email_window.geometry("300x200")
+
+        email_label = ctk.CTkLabel(email_window, text="Digite o email:")
+        email_label.pack(pady=10)
+        
+
+        email_entry = ctk.CTkEntry(email_window)
+        email_entry.pack(pady=10, fill='x', padx=20)
+
+        send_button = ctk.CTkButton(email_window, text="Enviar", command=lambda: self.send_email(email_entry.get(), email_window))
+        send_button.pack(pady=10)
+
+    def send_email(self, email, email_window):
         tasks = banco.listaTarefas()
         if tasks:
-            automacao.geraEmail(tasks)         
+            automacao.geraEmail(tasks, email)
+            print(email)
+        email_window.destroy()
 
 if __name__ == "__main__":
     app = ToDoListApp()

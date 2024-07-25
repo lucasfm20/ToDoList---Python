@@ -1,7 +1,7 @@
 import pyautogui
 import time
 
-def geraEmail(task_list):
+def geraEmail(task_list,email):
     
     pyautogui.press('win')
     time.sleep(1.0)
@@ -21,12 +21,13 @@ def geraEmail(task_list):
     time.sleep(5.5)
     pyautogui.press(['shift', 'c'])
     time.sleep(4.0)
-    pyautogui.write('lucas fortunato')
+    pyautogui.write(email)
+    time.sleep(1.0)
     pyautogui.press('enter')
     time.sleep(0.5)
     pyautogui.press('tab')
     pyautogui.write('Lista de tarefas pendentes')
-    time.sleep(0.5)
+    time.sleep(1.0)
     pyautogui.press('tab')  
     pyautogui.hotkey('ctrl', 'a')  
     time.sleep(0.5)  
@@ -42,4 +43,4 @@ def geraEmail(task_list):
     pyautogui.keyUp('ctrl')
 
 
-# executável pyinstaller --onefile --noconsole seu_script.py
+# executável pyinstaller --onefile --noconsole main.py
