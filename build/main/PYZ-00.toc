@@ -1,5 +1,5 @@
 ('C:\\Users\\lucas\\OneDrive\\Área de '
- 'Trabalho\\projetos\\ToDoList-Python\\build\\main\\PYZ-00.pyz',
+ 'Trabalho\\Projetos_java\\ToDoList-Python\\build\\main\\PYZ-00.pyz',
  [('__future__',
    'C:\\Users\\lucas\\AppData\\Local\\Programs\\Python\\Python312\\Lib\\__future__.py',
    'PYMODULE'),
@@ -134,11 +134,11 @@
    'PYMODULE'),
   ('automacao',
    'C:\\Users\\lucas\\OneDrive\\Área de '
-   'Trabalho\\projetos\\ToDoList-Python\\automacao.py',
+   'Trabalho\\Projetos_java\\ToDoList-Python\\automacao.py',
    'PYMODULE'),
   ('banco',
    'C:\\Users\\lucas\\OneDrive\\Área de '
-   'Trabalho\\projetos\\ToDoList-Python\\banco.py',
+   'Trabalho\\Projetos_java\\ToDoList-Python\\banco.py',
    'PYMODULE'),
   ('base64',
    'C:\\Users\\lucas\\AppData\\Local\\Programs\\Python\\Python312\\Lib\\base64.py',

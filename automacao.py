@@ -8,7 +8,7 @@ def geraEmail(task_list,email):
     pyautogui.typewrite('google')
     time.sleep(1.0)
     pyautogui.press('enter')
-    time.sleep(1.5)
+    time.sleep(2.5)
     pyautogui.click(x=672, y=400)
     time.sleep(1.0)
     pyautogui.keyDown('ctrl')
