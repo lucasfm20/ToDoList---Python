@@ -14,8 +14,17 @@ class ToDoListApp(ctk.CTk):
         self.conn = sqlite3.connect('meu_banco_de_dados.db')
         self.cursor = self.conn.cursor()
 
+        # self.cursor.execute('DROP TABLE IF EXISTS tarefas')
         self.cursor.execute('''
         CREATE TABLE IF NOT EXISTS tarefas (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            descricao TEXT NOT NULL
+        )
+        ''')
+        self.conn.commit()
+
+        self.cursor.execute('''
+        CREATE TABLE IF NOT EXISTS email (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             descricao TEXT NOT NULL
         )
@@ -49,6 +58,8 @@ class ToDoListApp(ctk.CTk):
         self.envia = ctk.CTkButton(self.frame, text="Enviar por email", command=self.envia_mail)
         self.envia.pack(pady=(10, 0))
 
+
+        
         # Carregar tarefas do banco de dados
         self.load_tasks()
 
@@ -73,7 +84,7 @@ class ToDoListApp(ctk.CTk):
             self.tasks.append((task_check, task_var))
             self.entry.delete(0, tk.END)
 
-            # Inserir a nova tarefa no banco de dados (sem o campo concluida)
+            # Inserir a nova tarefa no banco de dados 
             self.cursor.execute('''
             INSERT INTO tarefas (descricao)
             VALUES (?)
@@ -108,12 +119,23 @@ class ToDoListApp(ctk.CTk):
         send_button = ctk.CTkButton(email_window, text="Enviar", command=lambda: self.send_email(email_entry.get(), email_window))
         send_button.pack(pady=10)
 
+        
+
     def send_email(self, email, email_window):
+        self.cursor.execute('''
+            INSERT INTO email (descricao)
+            VALUES (?)
+            ''', (email,))
+        self.conn.commit()
+
         tasks = banco.listaTarefas()
         if tasks:
             automacao.geraEmail(tasks, email)
-            print(email)
+            
         email_window.destroy()
+        
+        
+       
 
 if __name__ == "__main__":
     app = ToDoListApp()
